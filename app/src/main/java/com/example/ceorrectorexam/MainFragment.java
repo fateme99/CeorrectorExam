@@ -2,6 +2,7 @@ package com.example.ceorrectorexam;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import static android.app.Activity.RESULT_OK;
@@ -20,6 +22,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class MainFragment extends Fragment {
     private Button mButton_take_photo;
+    private ImageView mImageView_picture;
     public static final int REQUEST_IMAGE_CAPTURE=1;
     public static final int REQUEST_CODE_CROP=2;
     private Uri picUri;
@@ -62,11 +65,18 @@ public class MainFragment extends Fragment {
                 picUri = data.getData();
                 performCrop();
             }
+            else if (requestCode==REQUEST_CODE_CROP){
+                Bundle extras=data.getExtras();
+                Bitmap the_pic=extras.getParcelable("data");
+                mImageView_picture.setImageBitmap(the_pic);
+            }
         }
+
     }
 
     private void findViews(View view){
         mButton_take_photo=view.findViewById(R.id.take_photo_btn);
+        mImageView_picture=view.findViewById(R.id.pic_view);
     }
 
     private void setListeners(){
@@ -84,8 +94,7 @@ public class MainFragment extends Fragment {
             Intent cropIntent=new Intent("com.android.camera.action.CROP");
             cropIntent.setDataAndType(picUri,"image/*");
             cropIntent.putExtra("crop",true);
-            /*cropIntent.putExtra("aspectX",1);
-            cropIntent.putExtra("aspectY",2);*/
+
             cropIntent.putExtra("outputX",256);
             cropIntent.putExtra("outputY",256);
             cropIntent.putExtra("return-data",true);
